@@ -21,7 +21,6 @@ function getViaPlayContent(movie){
 			  https.get(urlContent+movie, function(res) {	
 				  res.setEncoding('utf8');
 				  res.on('data', function(d) {
-				    console.log(d);
 				    resolve({
 				    	'payload': d
 				    })
@@ -43,13 +42,15 @@ function getTrailer(data) {
 			  http.request(options, function(res) {	
 				  //res.setEncoding('utf8');
 				  res.on('data', function(d) {
-				  	var newD = d;
+				  	var trailerID;
+				  	var trailerTitle;
 				    xml2js(d, function (err, result) {
-					    console.log(result.trailers.trailer[0].trailer_id);
-					    newD = result.trailers.trailer[0].trailer_id;
+					    trailerID = result.trailers.trailer[0].trailer_id;
+					    trailerTitle = result.trailers.trailer[0].title[0];
 					});
 				    resolve({
-				    	'trailer_url': urlTrailer+newD
+				    	'trailer_url': urlTrailer+trailerID,
+				    	'trailer_title': trailerTitle
 				    })
 				  });
 				}).on('error', function(e) {

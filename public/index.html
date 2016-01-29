@@ -4,20 +4,6 @@
 </head>
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script type="text/javascript">
-	$.ajax({
-	    //dataType: "json",
-	    url: 'http://localhost:8081/film/non-stop-2014',
-	    type: 'GET',
-	    withCredentials: true,
-	})
-	.done(function(theData) {
-		console.log(theData);
-
-
-	}).fail(function(req) {	
-		console.log("err");
-	});		
-</script>
+<script src="trailer.js"></script>
 </body>
 </html>
