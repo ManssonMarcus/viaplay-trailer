@@ -1,62 +1,69 @@
 var Q = require('Q');
-var https = require('https');
-var http = require('http');
 var xml2js  = require('xml2js').parseString;
-var urlContent = 'https://content.viaplay.se/web-se/film/';
+var request = require("request");
+
+var urlIMDb = 'http://www.omdbapi.com/?t=';
+var pathIMDb = '&y=&plot=short&r=json';
 var urlTrailerAPI = 'http://api.traileraddict.com/?imdb=';
 var urlTrailer = 'https://v.traileraddict.com/';
 
 
 function  getMovie(movie) {
 	
-	var promise = getViaPlayContent(movie)
+	var promise = getIMDbContent(movie)
 		.then(getTrailer);
 		
 		return promise;
 
 }
 
-function getViaPlayContent(movie){
+function getIMDbContent(movie){
 	return Q.Promise(function(resolve) {
-			  https.get(urlContent+movie, function(res) {	
-				  res.setEncoding('utf8');
-				  res.on('data', function(d) {
-				    resolve({
-				    	'payload': d
-				    })
-				  });
-				}).on('error', function(e) {
-				  throw new Error("ERROR: Something happened...");
-				});
+		request(urlIMDb+movie+pathIMDb, function(error, response, body) {
+			if (!error && response.statusCode == 200) {	
+				resolve({'payload': body})
+			}  
+			else {
+				throw new Error("ERROR: could not get imdb");
+			}
+		});
 	});
 }
 
 function getTrailer(data) {
 	
-	var options = {
-	  host: 'api.traileraddict.com',
-	  path: '/?imdb=2024469'
-	};
+	data = JSON.parse(data.payload);
+	imdbID = data.imdbID.replace(/[^\d]+/,'');
 
 	return Q.Promise(function(resolve) {
-			  http.request(options, function(res) {	
-				  //res.setEncoding('utf8');
-				  res.on('data', function(d) {
-				  	var trailerID;
-				  	var trailerTitle;
-				    xml2js(d, function (err, result) {
-					    trailerID = result.trailers.trailer[0].trailer_id;
-					    trailerTitle = result.trailers.trailer[0].title[0];
-					});
-				    resolve({
-				    	'trailer_url': urlTrailer+trailerID,
-				    	'trailer_title': trailerTitle
-				    })
-				  });
-				}).on('error', function(e) {
-				  throw new Error("ERROR: Something happened...");
-				}).end();
+		request('http://api.traileraddict.com/?imdb='+imdbID, function(error, response, body) {
+			if (!error && response.statusCode == 200) {	
+				var trailerID;
+			    xml2js(body, function (err, result) {
+				    trailerID = result.trailers.trailer[0].trailer_id;
+				});
+				resolve({
+					'trailer_url': urlTrailer+trailerID,
+				    'Title': data.Title,
+				    'Year': data.Year,
+				    'Genre': data.Genre,
+				    'Director': data.Director,
+				    'Actors': data.Actors,
+				    'Runtime': data.Runtime,
+				    'Country': data.Country, 
+				    'imdbRating': data.imdbRating,
+				    'imdbVotes': data.imdbVotes,
+				    'Plot': data.Plot,
+				    'imdbID':data.imdbID
+				})
+			}  
+			else {
+				throw new Error("ERROR: could not get trailer");
+			}
+		});
 	});
+
+
 }
 
 module.exports = {
