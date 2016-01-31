@@ -17,7 +17,7 @@ app.get('/film/:movieId', function(req, res) {
 		// with the requested data.
 		res.send(response);
 	}, function(reason) {
-		// Handle error here, maybe send HTTP Status Code 500?	
+		// Should handle error here, 500
 	})
 });
 
