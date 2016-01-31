@@ -1,7 +1,7 @@
 {
-  "name": "test",
+  "name": "Trailer stream",
   "version": "1.0.0",
-  "description": "",
+  "description": "Providing the user with information about a movie and a triler",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

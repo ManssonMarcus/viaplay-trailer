@@ -5,10 +5,6 @@ app.use(express.static('public'));
 
 var movieTrailerRoute = require('./controllers/movieTrailer.js');
 
-app.get('/', function (req, res) {
-   res.send('Hello World');
-})
-
 app.get('/film/:movieId', function(req, res) {
   var movieId = req.params.movieId;
 	var promise = movieTrailerRoute.getMovie(movieId);
@@ -17,7 +13,7 @@ app.get('/film/:movieId', function(req, res) {
 		// with the requested data.
 		res.send(response);
 	}, function(reason) {
-		// Should handle error here, 500
+		res.status(500).send({ error: 'Something failed!' });
 	})
 });
 
